@@ -1,0 +1,53 @@
+---
+title: "@Genie/Apollo"
+description: Apollo is the brain of Genie - Executes quantitative trading algorithms and generates trading signals.
+repository: genie-algo/apollo
+published: true
+
+---
+
+# Apollo - Strategy Engine
+
+## Overview
+
+**Apollo** is the core strategy execution engine within The Genie Project infrastructure. It serves as the brain of the trading system, responsible for processing market data, executing quantitative algorithms, and generating trading signals. Apollo bridges the gap between raw market data (provided by Mercury) and portfolio management decisions (handled by Vault).
+
+## Role in TheGenieProject Infrastructure
+
+Apollo acts as the processing layer in the trading pipeline:
+
+1. **Data Consumption**: Subscribes to real-time and historical market data streams from Mercury via ZeroMQ topics
+2. **Strategy Execution**: Runs multiple trading strategies concurrently using standardized interfaces
+3. **Signal Generation**: Produces trading signals based on technical indicators and algorithmic logic
+4. **Signal Distribution**: Publishes signals to Vault for portfolio management and risk assessment
+
+## Key Features
+
+- **Modular Strategy Framework**: Trait-based system allowing easy addition of new trading algorithms
+- **High-Performance Processing**: Asynchronous Rust implementation for low-latency signal generation
+- **Multi-Asset Support**: Concurrent processing of multiple cryptocurrency pairs
+- **Quantitative Indicators**: Comprehensive library of technical analysis tools
+- **Real-time and Backtesting Modes**: Unified codebase for both live trading and historical simulation
+
+## Architecture Components
+
+- **Engine Runner**: Orchestrates system initialization and component coordination
+- **Topic Handlers**: Process data streams for individual trading pairs
+- **Quantitative Library**: Technical indicators and calculation utilities
+- **Strategy Framework**: Standardized interfaces for algorithm implementation
+- **ZMQ Integration**: Communication layer for data input and signal output
+
+## Current Status
+
+Apollo is under active development with core functionality implemented. Key areas of focus include:
+- Strategy standardization and optimization
+- Performance improvements for high-frequency data processing
+- Enhanced indicator library expansion
+- Integration testing with Mercury and Vault components
+
+## Dependencies
+
+- Mercury (Data Provider)
+- Vault (Portfolio Manager)
+- GINP (Internal Network Protocol)
+- Mercury Client (Data Normalization)

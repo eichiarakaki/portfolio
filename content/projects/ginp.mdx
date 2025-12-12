@@ -1,0 +1,70 @@
+---
+title: "@Genie/GINP"
+description: GINP is the foundational communication protocol library within The Genie Project infrastructure.
+# date: "2022-07-18"
+published: true
+
+---
+
+# Genie's Internal Network Protocol (GINP)
+
+## Overview
+
+**GINP** is the foundational communication protocol library within The Genie Project infrastructure. It provides standardized data structures and serialization formats for internal communication between all microservices, ensuring consistency and interoperability across the trading ecosystem.
+
+## Role in TheGenieProject Infrastructure
+
+GINP serves as the communication backbone, defining:
+
+1. **Signal Envelopes**: Standardized containers for trading signals with metadata
+2. **Snapshot Structures**: Timestamped system state representations
+3. **Component Interfaces**: Common data types for inter-service communication
+4. **Serialization Standards**: Consistent JSON formatting across all components
+
+## Key Features
+
+- **Type Safety**: Strongly-typed Rust structures for reliable data exchange
+- **Version Compatibility**: Backward-compatible protocol evolution
+- **Performance Optimized**: Efficient serialization for high-throughput messaging
+- **Cross-Component Consistency**: Unified data models across Apollo, Mercury, and Vault
+
+## Usage in Infrastructure
+
+All microservices in TheGenieProject depend on GINP for:
+- Trading signal transmission between Apollo and Vault
+- System state synchronization
+- Configuration data exchange
+- Error handling and status reporting
+
+## Current Status
+
+GINP is a stable, production-ready library providing core protocol definitions. It serves as a dependency for all active microservices and supports ongoing development of new components.
+
+---
+## Example Usage
+```rust
+use ginp::{SignalEnvelope, Components, Position, Snapshot, SnapshotContext, StrategySnapshotContext};
+
+fn main() {
+    let mut envelope = SignalEnvelope::new_unchecked(
+        "signal1".to_string(),
+        Position::Long,
+        Some("BTCUSD".to_string()),
+        Some(0.9),
+        Some(110.0),
+        Some(90.0),
+        Some(120.0),
+        HashMap::new(),
+    );
+
+    let snapshot = Snapshot {
+        timestamp_ns: 1234567890,
+        context: SnapshotContext::Strategy(StrategySnapshotContext {
+            last_price: 100.0,
+        }),
+    };
+
+    envelope.add_snapshot(Components::StrategyEngine, snapshot);
+    println!("{:?}", envelope);
+}
+```

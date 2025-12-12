@@ -1,0 +1,235 @@
+---
+title: "@Genie/Mercury_client"
+description: Mercury Client is the data access and normalization layer within TheGenieProject infrastructure.
+#date: "2023-07-01"
+published: true
+repository: genie-algo/mercury_client
+---
+# Mercury Client - Data Normalization Library
+
+## Overview
+
+**Mercury Client** is the data access and normalization layer within The Genie Project infrastructure. It provides a unified interface for consuming market data from Mercury, abstracting the differences between backtesting and live trading modes.
+
+## Role in TheGenieProject Infrastructure
+
+Mercury Client serves as the data consumption bridge, enabling:
+
+1. **Unified Data Access**: Single API for both historical and real-time data streams
+2. **Mode Abstraction**: Seamless switching between backtesting and live trading
+3. **Connection Management**: Automatic reconnection and heartbeat monitoring
+4. **Data Normalization**: Consistent data format across all consuming services
+
+## Key Features
+
+- **Multi-Topic Support**: Simultaneous subscription to multiple data streams
+- **Channel-Based Architecture**: Isolated channels for OHLCV and trade data
+- **Automatic Reconnection**: Robust connection recovery with configurable timeouts
+- **Heartbeat System**: Continuous monitoring of data feed health
+- **Graceful Shutdown**: Coordinated termination with cleanup procedures
+
+## Architecture Components
+
+- **Client Library**: Core functionality for ZMQ connection and data processing
+- **Configuration System**: Environment-specific settings for backtest/live modes
+- **Connection Manager**: Handles socket lifecycle and reconnection logic
+- **Data Router**: Distributes incoming messages to appropriate channels
+- **State Management**: Tracks connection status and component readiness
+
+## Current Status
+
+Mercury Client is under development with core connection functionality implemented. Active development focuses on:
+- Trade topics support implementation
+- Enhanced error recovery mechanisms
+- Performance optimization for high-throughput scenarios
+- Comprehensive testing across different environments
+
+## Integration Points
+
+Mercury Client is used by:
+- Apollo (Strategy Engine) - for normalized market data input
+- Vault (Portfolio Manager) - for consistent data processing
+- Future components requiring standardized data access
+
+---
+## Data Flow
+
+```
+ZeroMQ Server → Library → Topic Channels → Client Application
+```
+
+## Input Data Format
+
+The library expects messages in the following format from the ZeroMQ server:
+
+```
+[topic][binary zero][payload]
+```
+
+Where:
+- `topic` is the subscription topic (e.g., "BTCUSDT_1m_backtest")
+- `binary zero` is the ZeroMQ message delimiter
+- `payload` is the actual data content
+
+## Output Data Format
+
+The library delivers data to clients in the format:
+
+```
+"topic|payload"
+```
+
+Example:
+```
+"BTCUSDT_1m_backtest|{\"price\": 50000, \"volume\": 2.5}"
+```
+
+## Configuration
+
+The library reads from a `config.toml` file with the following structure:
+
+```toml
+[backtest]
+mercury_data_firing_socket = "tcp://127.0.0.1:202121"
+mercury_comm_socket = "tcp://127.0.0.1:202122"
+topics = [
+    "BTCUSDT_1m_backtest",
+    "ADAUSDT_1m_backtest",
+    "AVAXUSDT_1m_backtest"
+]
+
+[mercury]
+mercury_data_firing_socket = "tcp://127.0.0.1:302121"
+mercury_comm_socket = "tcp://127.0.0.1:302122"
+topics = [
+    "BTCUSDT_1m",
+    "ADAUSDT_1m",
+    "AVAXUSDT_1m"
+]
+```
+
+## Usage Example
+
+```rust
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    env_logger::init();
+
+
+    let (topic_receivers, shutdown_rx) = mercury_api::init_mercury(
+        "Strategy Engine".to_string()
+    ).await?;
+
+    // CRITICAL: DON'T let receivers get dropped!
+    // Handle them immediately:
+
+    let mut handles = Vec::new();
+    for (topic, mut receiver) in topic_receivers {
+        let handle = tokio::spawn(async move {
+            log::info!("Starting handler for topic: {}", topic);
+            while let Some(data) = receiver.recv().await {
+                log::info!("Received data for {}: {}", topic, data);
+                // Your processing logic here
+            }
+            log::info!("Handler for topic {} finished", topic);
+        });
+        handles.push(handle);
+    }
+
+    // Wait for shutdown signal
+    let mut shutdown_rx = shutdown_rx;
+    let _ = shutdown_rx.recv().await;
+
+    // Wait for all handlers to finish
+    for handle in handles {
+        let _ = handle.await;
+    }
+
+    Ok(())
+}
+```
+
+## API Reference
+
+### `init_mercury`
+
+```rust
+pub async fn init_mercury(
+    component_name: String,
+) -> Result<(HashMap<String, mpsc::Receiver<String>>, broadcast::Receiver<()>), ClientError>
+```
+
+**Parameters:**
+- `component_name`: Identifier for your component
+
+**Returns:**
+- `HashMap<String, mpsc::Receiver<String>>`: Map of topic names to their respective receivers
+- `broadcast::Receiver<()>`: Shutdown signal receiver
+
+### ComponentClient (Internal)
+
+Main client class that manages:
+- Connection state
+- Heartbeat system
+- Message routing
+- Error recovery
+
+## Error Handling
+
+The library returns `ClientError` for all error cases, including:
+- Connection failures
+- Timeouts
+- Channel errors
+- Configuration errors
+
+## Performance Characteristics
+
+- **Latency**: Typically \<1ms for message delivery
+- **Throughput**: Capable of handling 10,000+ messages/second
+- **Memory**: Approximately 1MB overhead per topic channel
+
+## Best Practices
+
+1. Always check for shutdown signals
+2. Process messages quickly to avoid channel backpressure
+3. Use separate tasks for different topics when possible
+4. Monitor connection state for production systems
+5. Handle malformed messages gracefully
+
+## Example Message Processing
+
+```rust
+while let Some(data) = receiver.recv().await {
+    match parse_message(&data) {
+        Ok((topic, payload)) => process_data(topic, payload),
+        Err(e) => log::warn!("Bad message: {}", e),
+    }
+}
+```
+
+## Shutdown Procedure
+
+The library supports graceful shutdown:
+1. CTRL+C signal is captured
+2. Shutdown signal is broadcast to all receivers
+3. Connections are closed cleanly
+4. All resources are released
+
+## Dependencies
+
+- `tokio` for async runtime
+- `zmq` for ZeroMQ integration
+- `serde` for configuration parsing
+- `log` for logging
+
+## Limitations
+
+- Maximum of 10,000 pending messages per topic channel
+- Requires ZeroMQ 4.3+ on the server side
+- Topic names must be ASCII and \<256 characters
+
+
+## Resume
+
+This library was created to normalize and abstract the complexity of connecting to sockets and topics.
+What this library does is simply register the components for Mercury to detect and depending on the Mode (historical/realtime), different sockets and topics will be used, but with the same functionalities, and the way in which the data arrives from Mercury, depends on Mercury.

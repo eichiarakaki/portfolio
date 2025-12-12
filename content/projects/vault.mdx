@@ -1,0 +1,90 @@
+---
+title: "@Genie/Vault"
+description: Vault is the portfolio management and risk control layer within TheGenieProject infrastructure.
+repository: genie-algo/vault
+published: true
+
+---
+# Vault - Portfolio Manager
+
+## Overview
+
+**Vault** is the portfolio management and risk control layer within TheGenieProject infrastructure. It serves as the decision-making authority for capital allocation, position sizing, and portfolio optimization across the trading system.
+
+## Role in TheGenieProject Infrastructure
+
+Vault acts as the risk and capital management layer, responsible for:
+
+1. **Signal Processing**: Receiving and validating trading signals from Apollo
+2. **Risk Assessment**: Evaluating trade proposals against portfolio constraints
+3. **Capital Allocation**: Determining position sizes using quantitative methods
+4. **Portfolio Optimization**: Maintaining diversification and rebalancing strategies
+5. **Performance Tracking**: Monitoring portfolio metrics and PnL calculations
+
+## Key Features
+
+- **Dynamic Position Sizing**: Kelly Criterion-based capital allocation (3-15% per trade)
+- **Portfolio Rebalancing**: Automatic adjustments when allocations deviate by 5%
+- **Risk Management**: Multi-level validation of trading decisions
+- **Real-time Monitoring**: Continuous portfolio state tracking and metrics
+- **Backtesting Support**: Historical portfolio simulation and optimization
+
+## Architecture Components
+
+- **Portfolio Engine**: Core state management and position tracking
+- **Signal Analyzer**: Processes incoming trading signals
+- **Risk Engine**: Validates trades against risk parameters
+- **Optimizer**: Implements portfolio rebalancing and optimization logic
+- **Metrics Calculator**: Performance tracking and reporting utilities
+
+## Current Status
+
+Vault is in active development with foundational portfolio management implemented. Development priorities include:
+- Live trading mode implementation
+- Advanced optimization algorithms
+- Enhanced risk modeling capabilities
+- Integration testing with Apollo and Mercury
+
+## Integration Points
+
+Vault receives signals from:
+- Apollo (Strategy Engine) - trading signal input
+- Mercury (Data Provider) - market data for analysis
+
+And coordinates with planned:
+- Execution Engine - for trade placement
+- Risk Engine - for advanced risk assessment
+
+---
+## Primary Objective of the Vault (Portfolio Manager)
+
+#### Capital Allocation Decisions
+- Determine how much capital to allocate per trade.
+- Select which assets to engage with.
+- Maintain diversification within defined limits.
+
+#### Apply Portfolio-Level Rules
+Enforce high-level constraints, such as:
+- Max number of open positions
+- Allowed trading symbols
+- Exposure per asset or direction (long/short)
+
+#### Manage and Monitor Portfolio State
+- Track balances, open positions, unrealized PnL, total equity.
+- Measure exposure across symbols and sides.
+- Detect when rebalancing or position adjustments are needed.
+
+#### Generate Trade Intentions
+- Receive trade signals from the Strategy Engine.
+- Convert them into candidate orders (without placing them).
+- Determine:
+  - Side (BUY/SELL)
+  - Quantity (based on risk or exposure)
+  - Optional: SL/TP targets
+> **⚠️ The Portfolio Manager does not validate risk or execute trades — it only prepares the intent.**
+
+#### Update Portfolio After Execution
+- Once a trade is confirmed (from Execution Engine), it:
+- Updates open positions
+- Adjusts balances
+- Recomputes exposure and PnL

@@ -4,18 +4,13 @@ import { allProjects } from "contentlayer/generated";
 import { Navigation } from "../components/nav";
 import { Card } from "../components/card";
 import { Article } from "./article";
-import { Eye } from "lucide-react";
 
 export const revalidate = 60;
 export default async function ProjectsPage() {
-  const views = allProjects.reduce((acc, p) => {
-    acc[p.slug] = 0;
-    return acc;
-  }, {} as Record<string, number>);
 
-  const featured = allProjects.find((project) => project.slug === "unkey")!;
-  const top2 = allProjects.find((project) => project.slug === "planetfall")!;
-  const top3 = allProjects.find((project) => project.slug === "highstorm")!;
+  const featured = allProjects.find((project) => project.slug === "magic-stream")!;
+  const top2 = allProjects.find((project) => project.slug === "local-cloud")!;
+  const top3 = allProjects.find((project) => project.slug === "genie-project")!;
   const sorted = allProjects
     .filter((p) => p.published)
     .filter(
@@ -39,7 +34,8 @@ export default async function ProjectsPage() {
             Projects
           </h2>
           <p className="mt-4 text-zinc-400">
-            Some of the projects are from work and some are on my own time.
+            All the projects are made in my free time as a way to improve my
+            skills and learn new technologies.
           </p>
         </div>
         <div className="w-full h-px bg-zinc-800" />

@@ -1,0 +1,145 @@
+---
+title: "@Genie/Mercury"
+description: Mercury is the data ingestion and distribution layer within The Genie Project infrastructure.
+#date: "2021-03-16"
+repository: genie-algo/mercury
+published: true
+---
+
+# Mercury – Data Provider
+
+## Overview
+
+**Mercury** is the data ingestion and distribution layer within The Genie Project infrastructure. It serves as the central hub for all market data, providing both historical and real-time cryptocurrency market information to the trading system.
+
+## Role in The Genie Project Infrastructure
+
+Mercury acts as the data foundation, responsible for:
+
+1. **Data Ingestion**: Collecting market data from external sources (exchanges, historical databases)
+2. **Data Normalization**: Converting diverse data formats into unified schemas
+3. **Data Distribution**: Broadcasting processed data via ZeroMQ topics to consuming services
+4. **Query Interface**: Providing GraphQL API for external data access and analysis
+
+## Key Features
+
+- **Unified Data Schema**: Eliminates compatibility issues between historical and real-time data
+- **High-Performance Streaming**: Asynchronous processing for low-latency data delivery
+- **Multi-Source Support**: Integration with multiple cryptocurrency exchanges
+- **Historical Processing**: Efficient handling of large Parquet datasets for backtesting
+- **Real-time Streaming**: Live data ingestion with automatic reconnection and error recovery
+
+## Architecture Components
+
+- **Historical Engine**: Processes and synchronizes timestamp-ordered historical data
+- **Real-time Engine**: Manages live WebSocket connections and streaming data
+- **GraphQL Server**: Query interface with caching and connection pooling
+- **ZMQ Publisher**: Topic-based data distribution system
+- **Data Pipeline**: Async processing with channel-based communication
+
+## Current Status
+
+Mercury is actively developed with core functionality operational. Focus areas include:
+- Orderbook data streaming implementation
+- Performance optimization for backtesting mode
+- Enhanced error handling and fault tolerance
+- GraphQL API expansion for advanced queries
+
+## Dependencies and Integration
+
+Mercury provides data feeds to:
+- Apollo (Strategy Engine) - for signal generation
+- Vault (Portfolio Manager) - for market data analysis
+- Mercury Client - for normalized data access
+
+---
+## Features
+
+* **Flexible Configuration**
+  Structured via a single TOML config file, allowing dynamic setup of trading pairs, endpoints, intervals, and database connections.
+
+* **Structured Logging**
+  Console and file-based logging with colored, timestamped, and leveled output — useful for both debugging and monitoring in production.
+
+* **Concurrent, High-Performance Architecture**
+  Uses connection pooling, non-blocking channels, and multi-threaded data pipelines for maximum throughput and low-latency delivery.
+
+---
+
+## Key Concern: Data Structure Incompatibility
+
+A critical challenge in Mercury is the **incompatibility between historical and real-time data formats**.
+
+For example:
+
+* Certain fields (columns) present in historical Parquet files may not be available in real-time WebSocket or REST feeds.
+* Field types and structures may also differ slightly (e.g., missing metadata or inconsistent naming conventions).
+
+### Consequence
+
+This mismatch creates a fundamental problem:
+
+> **Strategies developed for backtesting become incompatible with live trading**, unless significant portions of code are rewritten or duplicated for real-time data handling.
+
+---
+
+## Solution: Unified Data Schema
+
+To solve this, Mercury adopts a **unified data structure** shared between historical and real-time data.
+
+### How it works:
+
+* Define a **common schema** (struct) that captures the shared subset of fields used by both data sources.
+* Normalize both historical and real-time data streams to conform to this schema before distribution via ZMQ or GraphQL.
+* Consumers (strategies, engines) work only with the **unified struct**, making them agnostic to the source of the data.
+
+### Benefits:
+
+* Backtest and live trading code can **share the same logic and interface**.
+* No need for redundant code paths or branching logic based on mode.
+* Easier validation, debugging, and maintainability across environments.
+
+---
+
+## Key Concern: Synchronization of All Backtest Data Types
+
+A major challenge during backtesting is the **synchronization of different types of data**, such as trades and OHLCV candles.
+
+Unlike in real-time mode — where all data can be pushed as it arrives via ZeroMQ — backtesting must be carefully coordinated. For instance, candle data may be at index `100/1000` while trade data is at `100/100000`, meaning the candle data would be temporally ahead of the trade data. This desynchronization breaks accurate analysis and signal generation.
+
+---
+
+## Solution: Channel-Based Event Ingestion with Global Coordination
+
+To eliminate lock contention and improve performance, Mercury uses a **channel-based architecture**:
+
+1. The core engine creates dedicated `Sender` channels for each data type (e.g., trades, candles, order book).
+2. Each data producer sends its normalized events through its assigned channel.
+3. A centralized receiver loop collects these events and inserts them into a **shared event queue**, globally ordered by timestamp.
+
+This design removes the need for shared locking across producers and allows precise control of event dispatch and timing from a central location.
+
+---
+
+### Parallel Dispatch of Same-Timestamp Events
+
+All events that share the same timestamp are **dispatched in parallel**, simulating real-world market behavior, where multiple updates (trades, order book changes, etc.) may occur simultaneously.
+
+This approach guarantees high fidelity in the simulation by avoiding artificial ordering of concurrent market events.
+
+---
+
+### Conditional Execution Constraints
+
+Parallel execution is only applied when events are **independent**. In certain cases, Mercury enforces an execution order:
+
+* If both `Trade` and `OrderBook` events have the same timestamp and are causally related, the system dispatches them sequentially, prioritizing `Trade`.
+* If `Trade` events contribute to tick-level OHLCV calculations, they are also prioritized over derived data.
+
+This hybrid dispatch model ensures accurate simulation without sacrificing performance.
+
+---
+
+## Limitation: Incomplete Tick-Level Simulation
+
+Certain microstructure analyses may be partially or fully unsupported if **tick-level candle data is missing**. For instance, strategies relying on price reaction to large trades require reconstructed candles from tick-level data, which may not be available in the historical database.

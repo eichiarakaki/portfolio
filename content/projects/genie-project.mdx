@@ -1,0 +1,53 @@
+---
+title: The Genie Project
+description: High-performance cryptocurrency trading ecosystem built in Rust.
+# date: "2023-05-01"
+url:
+published: false
+repository: "genie-algo/"
+  
+---
+
+# The Genie Project
+
+TheGenieProject is a comprehensive, high-performance cryptocurrency trading ecosystem built in Rust. It provides a modular, microservices-based architecture designed for both backtesting and live trading of algorithmic strategies. The system integrates data ingestion, strategy execution, portfolio management, and risk control to enable sophisticated quantitative trading operations.
+
+## Core Components
+
+### Apollo
+The strategy engine responsible for executing trading algorithms. It processes market data from Mercury, applies quantitative indicators and strategies, and generates trading signals that are communicated to the portfolio manager.
+
+### Mercury
+A high-performance data provider that handles both historical and real-time cryptocurrency market data. It supports:
+- Historical data distribution from Parquet files via ZeroMQ topics
+- Live data ingestion from cryptocurrency exchanges (e.g., Binance API)
+- GraphQL API for external querying
+- Unified data schema to ensure compatibility between backtesting and live trading modes
+
+### Mercury Client
+A client library that normalizes data streams from Mercury, providing a unified interface for both backtest and live trading modes. It handles automatic reconnection, heartbeat management, and topic-based data distribution.
+
+### Vault
+The portfolio manager that oversees capital allocation, risk management, and position sizing. It receives trading signals from Apollo, applies portfolio-level rules, and generates trade intentions based on the Kelly Criterion and diversification constraints.
+
+### GINP (Genie's Internal Network Protocol)
+A library defining standardized data structures and protocols for internal communication between components, ensuring consistent signal envelopes and snapshots across the system.
+
+### Sentinel and Warden
+Additional components currently in development or placeholder status for enhanced monitoring and security features.
+
+## Key Features
+
+- **High-Performance Architecture**: Built with Rust and Tokio for low-latency, concurrent processing
+- **Unified Data Schema**: Eliminates compatibility issues between historical and real-time data
+- **Modular Strategy Framework**: Standardized trait-based strategy interface for easy development and deployment
+- **Risk-Aware Portfolio Management**: Dynamic position sizing with Kelly Criterion and rebalancing
+- **Fault-Tolerant Design**: Heartbeat systems, automatic reconnection, and graceful shutdown handling
+- **Configurable System**: TOML-based configuration for flexible deployment across environments
+
+## Supported Trading Modes
+
+- **Backtesting**: Historical data replay with synchronized OHLCV and trade data
+- **Live Trading**: Real-time data processing with low-latency signal generation and execution
+
+The system is designed to scale from single-strategy backtesting to multi-asset, multi-strategy live trading operations while maintaining data integrity and system reliability.
