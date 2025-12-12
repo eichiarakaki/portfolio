@@ -1,14 +1,14 @@
 "use client";
-import { Github, Mail, Twitter } from "lucide-react";
+import { Github, Mail, X } from "lucide-react";
 import Link from "next/link";
 import { Navigation } from "../components/nav";
 import { Card } from "../components/card";
 
 const socials = [
 	{
-		icon: <Twitter size={20} />,
+		icon: <X size={20} />,
 		href: "https://www.x.com/eichi_arakaki",
-		label: "X",
+		label: "X / Twitter",
 		handle: "@eichi_arakaki",
 	},
 	{
@@ -25,7 +25,7 @@ const socials = [
 	},
 ];
 
-export default function Example() {
+export default function Contact() {
 	return (
 		<div className=" bg-gradient-to-tl from-zinc-900/0 via-zinc-900 to-zinc-900/0">
 			<Navigation />

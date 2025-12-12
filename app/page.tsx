@@ -3,6 +3,7 @@ import React from "react";
 
 const navigation = [
   { name: "Projects", href: "/projects" },
+  { name: "About Me", href: "/about-me" },
   { name: "Contact", href: "/contact" },
 ];
 
@@ -28,8 +29,13 @@ export default function Home() {
       </h1>
       <div className="hidden w-screen h-px animate-glow md:block animate-fade-right bg-gradient-to-r from-zinc-300/0 via-zinc-300/50 to-zinc-300/0" />
       <div className="my-16 text-center animate-fade-in">
-        <h2 className="text-sm text-zinc-500 ">
-          I'm God
+        <h2 className="text-[15px] text-zinc-500 ">
+          Currently developing a complete trading infrastructure: {" "}
+          <Link
+            href={"/projects/genie-project"}
+            target="_blank"
+            className="text-zinc-300 underline hover:text-zinc-100 duration-500"
+          >The Genie Project</Link>.
         </h2>
       </div>
     </div>
