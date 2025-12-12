@@ -33,7 +33,6 @@ export default function Home() {
           Currently developing a complete trading infrastructure: {" "}
           <Link
             href={"/projects/genie-project"}
-            target="_blank"
             className="text-zinc-300 underline hover:text-zinc-100 duration-500"
           >The Genie Project</Link>.
         </h2>
