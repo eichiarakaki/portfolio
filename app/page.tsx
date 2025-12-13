@@ -3,7 +3,7 @@ import React from "react";
 
 const navigation = [
   { name: "Projects", href: "/projects" },
-  { name: "About Me", href: "/about-me" },
+  { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];
 
