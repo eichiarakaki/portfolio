@@ -34,11 +34,17 @@ const socials = [
     }
 ];
 
-const languages = [
+const firstLanguages = [
     "Spanish (Native)",
     "English (C1)",
     "Japanese (Native)",
-]
+];
+
+const secondndLanguages = [
+    "Portuguese (B1)",
+    "Italian (A2)",
+];
+
 export default function AboutMe() {
     return (
         <div className=" bg-gradient-to-tl from-zinc-900/0 via-zinc-900 to-zinc-900/0">
@@ -54,15 +60,24 @@ export default function AboutMe() {
                             />
                         </div>
                         <h2 className="text-2xl font-semibold md:text-4xl font-display">Eichi Arakaki</h2>
+                        <section className="flex flex-rows md:flex-col gap-2 items-center">
+                            <div className="grid gap-1 grid-cols-3 place-items-center">
+                                {firstLanguages.map((s) => (
+                                    <span className="px-2 py-1 text-sm font-medium text-zinc-300  border-zinc-800 border-[1px] rounded-full duration-300 hover:text-white hover:bg-zinc-800 bg-zinc-900 select-none" key={s}>
+                                        {s}
+                                    </span>
+                                ))}
 
-                        <section className="flex flex-row items-center justify-center gap-2 md:gap-3">
-                            {languages.map((s) => (
-                                <span className="px-2 py-1 text-sm font-medium text-zinc-300  border-zinc-800 border-[1px] rounded-full duration-300 hover:text-white hover:bg-zinc-800 bg-zinc-900 select-none" key={s}>
-                                    {s}
-                                </span>
-                            ))}
+                            </div>
+                            <div className="grid gap-1 grid-cols-2 place-items-center">
+                                {secondndLanguages.map((s) => (
+                                    <span className="px-2 py-1 text-sm font-medium text-zinc-300  border-zinc-800 border-[1px] rounded-full duration-300 hover:text-white hover:bg-zinc-800 bg-zinc-900 select-none" key={s}>
+                                        {s}
+                                    </span>
+                                ))}
+                            </div>
                         </section>
-                        <p className="text-center text-zinc-300 max-w-md md:max-w-lg">
+                        <p className="text-center text-zinc-200 max-w-md md:max-w-lg">
                             I'm a self-taught Software Developer based in Saitama, Japan.
                             <br />
                             I am a self-taught software developer who started exploring technology at the age of 14. Over the years, I have developed a strong interest in a wide range of areas, from artificial intelligence to operating system kernels, and from web development to automated trading algorithms. I am deeply passionate about learning and continuously expanding my knowledge.
