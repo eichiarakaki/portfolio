@@ -36,13 +36,8 @@ const socials = [
 
 const FullFirstLanguages = [
     "Spanish (Native)",
-    "English (C1)",
+    "English (B1)",
     "Japanese (Native)",
-];
-
-const FullSecondndLanguages = [
-    "Portuguese (B1)",
-    "Italian (A2)",
 ];
 
 const firstLanguages = [
@@ -51,10 +46,6 @@ const firstLanguages = [
     "Japanese",
 ];
 
-const secondndLanguages = [
-    "Portuguese",
-    "Italian",
-];
 
 export default function AboutMe() {
     return (
@@ -81,27 +72,11 @@ export default function AboutMe() {
                             </div>
                             <div className="grid gap-1 grid-cols-3 place-items-center sm:hidden">
                                 {firstLanguages.map((s) => (
-                                    <span className="px-2 py-1 text-[11px] sm:text-sm font-medium text-zinc-300  border-zinc-800 border-[1px] rounded-full duration-300 hover:text-white hover:bg-zinc-800 bg-zinc-900 select-none" key={s}>
+                                    <span className="px-2 py-1 text-[13px] sm:text-sm font-medium text-zinc-300  border-zinc-800 border-[1px] rounded-full duration-300 hover:text-white hover:bg-zinc-800 bg-zinc-900 select-none" key={s}>
                                         {s}
                                     </span>
                                 ))}
                             </div>
-
-                            <div className="sm:grid sm:gap-1 sm:grid-cols-2 sm:place-items-center hidden">
-                                {FullSecondndLanguages.map((s) => (
-                                    <span className="px-2 py-1 text-[11px] sm:text-sm font-medium text-zinc-300  border-zinc-800 border-[1px] rounded-full duration-300 hover:text-white hover:bg-zinc-800 bg-zinc-900 select-none" key={s}>
-                                        {s}
-                                    </span>
-                                ))}
-                            </div>
-                            <div className="grid gap-1 grid-cols-2 place-items-center sm:hidden">
-                                {secondndLanguages.map((s) => (
-                                    <span className="px-2 py-1 text-[11px] sm:text-sm font-medium text-zinc-300  border-zinc-800 border-[1px] rounded-full duration-300 hover:text-white hover:bg-zinc-800 bg-zinc-900 select-none" key={s}>
-                                        {s}
-                                    </span>
-                                ))}
-                            </div>
-
                         </section>
                         <p className="text-center text-[14px] sm:text-[16px] text-zinc-200 max-w-md md:max-w-lg">
                             I'm a self-taught Software Developer based in Saitama, Japan.
