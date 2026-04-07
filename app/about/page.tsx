@@ -36,8 +36,8 @@ const socials = [
 
 const FullFirstLanguages = [
     "Spanish (Native)",
-    "English (B2)",
-    "Japanese (Native)",
+    "English (B2 Equivalent)",
+    "Japanese (N2相当)",
 ];
 
 const firstLanguages = [

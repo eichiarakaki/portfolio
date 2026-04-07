@@ -10,7 +10,7 @@ export default async function ProjectsPage() {
 
   const featured = allProjects.find((project) => project.slug === "aegis")!;
   const top2 = allProjects.find((project) => project.slug === "local-cloud")!;
-  const top3 = allProjects.find((project) => project.slug === "genie-project")!;
+  const top3 = allProjects.find((project) => project.slug === "magic-stream")!;
   const sorted = allProjects
     .filter((p) => p.published)
     .filter(
